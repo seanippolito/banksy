@@ -3,5 +3,5 @@
 	url = https://github.com/seanippolito/banksy-frontend
 
 [submodule "banksy-backend"]
-	path = apps/backends
+	path = apps/backend
 	url = https://github.com/seanippolito/banksy-backend
