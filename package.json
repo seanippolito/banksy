@@ -1,0 +1,17 @@
+{
+  "name": "banksy",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev:frontend": "pnpm --filter frontend dev",
+    "dev:backend": "make -C apps/backend run",
+    "dev": "concurrently \"pnpm dev:backend\" \"pnpm dev:frontend\""
+  },
+  "devDependencies": {
+    "concurrently": "^9.0.0"
+  },
+  "//": [
+    "Use this command if make is not installed for dev:backend",
+    "cd apps/backend && uvicorn app.main:app --reload --host 127.0.0.1 --port 8000"
+  ]
+}

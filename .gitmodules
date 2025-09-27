@@ -1,0 +1,3 @@
+[submodule "banksy-frontend"]
+	path = apps/frontend
+	url = https://github.com/seanippolito/banksy-frontend

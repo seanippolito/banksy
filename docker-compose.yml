@@ -1,0 +1,25 @@
+version: "3.9"
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+      target: runner
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+
+  backend:
+    build:
+      context: .
+      dockerfile: docker/backend.Dockerfile
+      target: runner
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=sqlite:///./banksy.db
+    volumes:
+      - ./apps/backend/banksy.db:/app/banksy.db
