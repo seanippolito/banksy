@@ -113,7 +113,7 @@ Check that users/accounts/transactions are being written:
 
 ```bash
 make be-sh
-sqlite3 data/banksy.db
+sqlite3 banksy.db
 .tables
 select * from users;
 ```
