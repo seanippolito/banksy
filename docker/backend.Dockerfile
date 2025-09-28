@@ -73,4 +73,4 @@ COPY --from=builder-dev /opt/venv /opt/venv
 COPY apps/backend/ /app/
 
 EXPOSE 8000
-CMD ["uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+CMD ["poetry", "run", "uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
