@@ -22,4 +22,4 @@ services:
     environment:
       - DATABASE_URL=sqlite+aiosqlite:////app/data/banksy.db
     volumes:
-      - ./apps/backend/banksy.db:/app/data/banksy.db
+      - ./apps/backend/banksy.db:/app/banksy.db
