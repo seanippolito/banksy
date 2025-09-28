@@ -45,13 +45,20 @@ COPY --from=builder-prod /opt/venv /opt/venv
 # App code
 COPY apps/backend/ /app/
 
+# Add start script
+COPY docker/start-backend.sh /start-backend.sh
+RUN chmod +x /start-backend.sh
+
 # Non-root user
 RUN useradd -m appuser
 USER appuser
 
 EXPOSE 8000
 # `uvicorn` now exists at /opt/venv/bin/uvicorn and is on PATH
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+# CMD ["poetry", "run", "uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2"]
+
+# In runner:
+CMD ["/start-backend.sh", "prod"]
 
 # -------------------------------
 # Stage 3: Builder (dev deps)
@@ -72,5 +79,11 @@ COPY --from=builder-dev /opt/venv /opt/venv
 # App code (will be overlayed by volume in compose override)
 COPY apps/backend/ /app/
 
+# Add start script
+COPY docker/start-backend.sh /start-backend.sh
+RUN chmod +x /start-backend.sh
+
 EXPOSE 8000
-CMD ["poetry", "run", "uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+#CMD ["poetry", "run", "uvicorn", "app.main:app", "--reload", "--host", "0.0.0.0", "--port", "8000"]
+# In dev stage:
+CMD ["/start-backend.sh", "dev"]
