@@ -152,7 +152,7 @@ Runs both frontend + backend in containers with live reload.
 ### Docker Production Environment
 
 ```bash
-make prod
+make up
 ```
 
 Runs production builds for both services.
