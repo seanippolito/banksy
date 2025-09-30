@@ -1,130 +1,109 @@
+# Banksy – Full-Stack Banking MVP
 
-# 🏦 Banksy – Full-Stack Banking Boilerplate
+Banksy is a **full-stack banking application MVP** built with:
 
-Banksy is a full-stack boilerplate using:
+* **Frontend**: Next.js (App Router) + React 19 + Tailwind CSS v4 + Clerk for authentication
+* **Backend**: FastAPI + SQLAlchemy + Alembic + SQLite (dev) / Postgres (prod)
+* **DevOps**: Docker + Docker Compose + Poetry for Python dependency management
 
-- **Frontend:** Next.js 19 (App Router), Tailwind v4, Clerk for auth
-- **Backend:** FastAPI (async), SQLAlchemy, Alembic migrations, SQLite (dev) or Postgres (prod-ready)
-- **Tooling:** pnpm workspaces, Poetry, Docker (multi-stage), docker-compose for local/prod orchestration
-
----
-
-## 📦 Prerequisites
-
-- [Node.js 20+](https://nodejs.org) and [pnpm](https://pnpm.io/)
-- [Python 3.12+](https://www.python.org/) and [Poetry](https://python-poetry.org/)
-- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+The application provides a simulated online banking platform with user authentication, accounts, transactions, money transfers, cards, account holders, and statements. It is designed as an **MVP** but with a production-ready foundation.
 
 ---
 
-## ⚙️ Local Development (no Docker)
+## ✨ Features Implemented
 
-Clone and install:
+* **Authentication**
 
-```bash
-git clone <your-repo-url> banksy
-cd banksy
-pnpm install    # install frontend deps via workspace
-````
+    * Clerk-based JWT validation between frontend and backend
+* **Users**
 
-### Frontend
+    * Persisted on first login
+* **Accounts**
 
-```bash
-cd apps/frontend
-pnpm dev
-# runs on http://localhost:3000
+    * Create, list, view by ID
+    * Primary holder automatically assigned
+* **Transactions**
+
+    * Create debit/credit transactions
+    * List per account
+* **Money Transfers**
+
+    * Double-entry style (debit sender, credit recipient)
+* **Cards**
+
+    * Ship new cards (simulated digital cards linked to accounts)
+* **Account Holders**
+
+    * Add/remove account holders (Primary, Joint, Business, Trust, etc.)
+* **Statements**
+
+    * Dynamic generation (date-filtered, aggregated transactions)
+* **Error Logging**
+
+    * ApplicationLogger DB table for error capture
+    * `/api/v1/errors` endpoint for reporting
+* **Frontend**
+
+    * Dashboard with user profile + accounts
+    * Accounts page with create/view accounts
+    * Account detail with holders, cards, statements
+    * Transactions page with debit/credit entry
+    * Money transfers page
+    * Error reporting UI
+
+---
+
+## 🛠️ Prerequisites
+
+* Node.js 20+
+* Python 3.12+
+* [Poetry](https://python-poetry.org/) (Python dependency manager)
+* Docker + Docker Compose
+* Clerk account (for authentication)
+
+---
+
+## ⚙️ Environment Variables
+
+Create a `.env` file in the backend and frontend:
+
+### Backend `.env`
+
+```env
+DATABASE_URL=sqlite+aiosqlite:///./data/banksy.db
+CLERK_JWKS_URL=https://<your-clerk-instance>/.well-known/jwks.json
+CLERK_JWT_ISSUER=https://<your-clerk-instance>/
+CLERK_AUDIENCE=banksy-backend
 ```
 
-### Backend
+### Frontend `.env.local`
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8000
+CLERK_PUBLISHABLE_KEY=<your-publishable-key>
+CLERK_SECRET_KEY=<your-secret-key>
+```
+
+---
+
+## 💾 Database Setup
+
+Banksy stores its data in `banksy.db` (SQLite in development).
+
+### Data Directory
+
+```bash
+mkdir -p apps/backend/data
+```
+
+### Run Migrations
 
 ```bash
 cd apps/backend
-poetry install
-poetry run alembic upgrade head   # run DB migrations
-poetry run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
-# runs on http://127.0.0.1:8000
+poetry run alembic upgrade head
 ```
 
----
-
-## 🐳 Run with Docker (recommended)
-
-### Development stack (hot reload)
-
-```bash
-make dev
-```
-
-* Frontend: [http://localhost:3000](http://localhost:3000)
-* Backend: [http://localhost:8000](http://localhost:8000)
-
-Mounts your code into containers, reloads on changes.
-
-### Production stack
-
-```bash
-docker compose up --build
-```
-
-* Builds multi-stage images
-* Runs Alembic migrations on container start
-* Serves optimized Next.js frontend + FastAPI backend
-
----
-
-## 🔑 Environment Variables
-
-All sensitive values should be stored in `.env.local` or Docker secrets.
-See `.env.example` for required variables:
-
-```ini
-# Clerk
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-
-# JWT template for backend auth
-CLERK_JWT_TEMPLATE_NAME=banksy-backend
-CLERK_JWKS_URL=https://<tenant>.clerk.accounts.dev/.well-known/jwks.json
-JWT_ISSUER=https://<tenant>.clerk.accounts.dev
-
-# Backend DB (SQLite dev)
-DATABASE_URL=sqlite+aiosqlite:///./data/banksy.db
-
-# Frontend API base
-NEXT_PUBLIC_API_URL=http://localhost:8000
-INTERNAL_API_URL=http://backend:8000
-
-# CORS
-CORS_ORIGINS=http://localhost:3000,http://127.0.0.1:3000
-```
-
----
-
-## 🛠️ Database Migrations
-
-Generate new migration:
-
-```bash
-make db-rev m="add accounts table"
-```
-
-Apply migrations:
-
-```bash
-make db-upgrade
-```
-
-Rollback:
-
-```bash
-make db-downgrade
-```
-
----
-
-## 🌱 Seeding Data
-
-Create a demo account for your first signed-in user:
+### Seed Basic Data
 
 ```bash
 make seed
@@ -132,20 +111,83 @@ make seed
 
 ---
 
-## 🚀 Features Implemented
+## 🚀 Running the Application
 
-* [x] pnpm monorepo + Docker Compose
-* [x] Clerk auth (frontend + backend JWT validation)
-* [x] User table auto-upsert on first request
-* [x] Accounts + Transactions models & APIs
-* [x] Alembic migrations
-* [x] Full hot-reload dev & multi-stage prod builds
+### Local Development (without Docker)
+
+1. Start backend
+
+   ```bash
+   cd apps/backend
+   poetry install
+   poetry run uvicorn app.main:app --reload
+   ```
+
+2. Start frontend
+
+   ```bash
+   cd apps/frontend
+   pnpm install
+   pnpm dev
+   ```
+
+Access:
+
+* API: [http://localhost:8000](http://localhost:8000)
+* API docs: [http://localhost:8000/docs](http://localhost:8000/docs)
+* Frontend: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 📚 Next Steps
+### Docker Development Environment
 
-* Add Postgres support for production
-* Build richer dashboard UI (balances, transaction history)
-* Add role-based access / permissions
-* Deploy to Fly.io / Render / AWS ECS
+```bash
+make dev
+```
+
+Runs both frontend + backend in containers with live reload.
+
+---
+
+### Docker Production Environment
+
+```bash
+make prod
+```
+
+Runs production builds for both services.
+
+---
+
+## 📖 API Documentation
+
+FastAPI provides interactive API docs at:
+
+👉 [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+## 🧪 Testing
+
+Run backend tests with coverage report included:
+
+```bash
+cd apps/backend
+poetry run pytest -v
+```
+
+In-memory SQLite is used for testing to isolate from dev/prod data.
+
+---
+
+## 🔮 Next Steps
+
+* Improve test coverage (currently ~65%)
+* Add real card tokenization/PCI-safe mock layer
+* Expand statements (export to PDF/CSV)
+* Implement scheduled/recurring transfers
+* UI polish (charts, analytics)
+* Deployment pipeline (CI/CD to cloud)
+* Multi-tenant support
+
+---
