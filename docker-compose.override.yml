@@ -9,7 +9,7 @@ services:
       - ./packages:/app/packages:cached
     working_dir: /app
     env_file:
-      - ./apps/frontend/.env.local
+      - ./apps/frontend/.env.development
     command: sh -c "pnpm install && pnpm --filter frontend dev --turbo"
     ports:
       - "3000:3000"
@@ -25,10 +25,12 @@ services:
     # Mount code for uvicorn --reload
     # If your main.py is under apps/backend/app/, use that path:
     volumes:
+      - type: tmpfs
+        target: /app/data
       - ./apps/backend:/app:cached
     env_file:
-      - ./apps/backend/.env
+      - ./apps/backend/.env.development
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite+aiosqlite:////app/banksy.db
+      - DATABASE_URL=sqlite+aiosqlite:///./data/dev.db

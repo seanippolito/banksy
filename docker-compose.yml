@@ -3,8 +3,9 @@ services:
     build:
       context: .
       dockerfile: apps/frontend/Dockerfile
+      target: runner
     env_file:
-      - ./apps/frontend/.env
+      - ./apps/frontend/.env.production
     ports:
       - "3000:3000"
     depends_on:
@@ -18,11 +19,12 @@ services:
       context: .
       dockerfile: apps/backend/Dockerfile
       target: runner
+    working_dir: /app
     env_file:
-      - ./apps/backend/.env
+      - ./apps/backend/.env.production
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite+aiosqlite:////app/data/banksy.db
+      - DATABASE_URL=sqlite+aiosqlite:///./data/prod.db
     volumes:
-      - ./apps/backend/banksy.db:/app/banksy.db
+      - ./apps/backend/data:/app/data
