@@ -16,6 +16,8 @@ apps/backend/.mypy_cache
 # Misc
 .env
 .env.*
+!.env.example  # keep an example template if you want
+
 .git
 .gitignore
 Dockerfile
