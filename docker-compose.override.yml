@@ -2,12 +2,14 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: docker/frontend.Dockerfile
+      dockerfile: apps/frontend/Dockerfile
       target: dev
     volumes:
       - ./apps/frontend:/app/apps/frontend:cached
       - ./packages:/app/packages:cached
     working_dir: /app
+    env_file:
+      - ./apps/frontend/.env.local
     command: sh -c "pnpm install && pnpm --filter frontend dev --turbo"
     ports:
       - "3000:3000"
@@ -18,13 +20,15 @@ services:
   backend:
     build:
       context: .
-      dockerfile: docker/backend.Dockerfile
+      dockerfile: apps/backend/Dockerfile
       target: dev
     # Mount code for uvicorn --reload
     # If your main.py is under apps/backend/app/, use that path:
     volumes:
       - ./apps/backend:/app:cached
+    env_file:
+      - ./apps/backend/.env
     ports:
       - "8000:8000"
     environment:
-      - DATABASE_URL=sqlite+aiosqlite:////app/data/banksy.db
+      - DATABASE_URL=sqlite+aiosqlite:////app/banksy.db
