@@ -5,13 +5,24 @@ PROJECT_ROOT := $(abspath $(dir $(lastword $(MAKEFILE_LIST))))
 COMPOSE_DEV := -f $(PROJECT_ROOT)/docker-compose.yml -f $(PROJECT_ROOT)/docker-compose.override.yml
 COMPOSE_PROD := -f $(PROJECT_ROOT)/docker-compose.yml
 
+# Load environment variables from .env into ENV_FILE variable
+ENV_FILE_DEV := $(PROJECT_ROOT)/.env.development
+ENV_FILE_PROD := $(PROJECT_ROOT)/.env.production
+
+# Helper to export all env vars for docker compose
+define load_env
+	$(if $(wildcard $(ENV_FILE)), export $$(grep -v '^#' $(ENV_FILE) | xargs))
+endef
+
 .PHONY: dev up down rebuild logs be-sh fe-sh db-rev db-upgrade db-downgrade seed
 
 dev:
-	docker compose $(COMPOSE_DEV) up --build
+	$(call load_env)
+	docker compose $(COMPOSE_DEV) --env-file $(ENV_FILE_DEV) up --build
 
 up:
-	docker compose $(COMPOSE_PROD) up --build -d
+	$(call load_env)
+	docker compose $(COMPOSE_PROD) --env-file $(ENV_FILE_PROD) up --build -d
 
 down:
 	docker compose $(COMPOSE_DEV) down -v
