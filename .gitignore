@@ -38,7 +38,10 @@ apps/backend/.venv/
 poetry.lock
 
 # Env files (secrets)
-.env*
+.env
+.env.production
+.env.development
+.env.local
 !.env.example  # keep an example template if you want
 
 # Docker
