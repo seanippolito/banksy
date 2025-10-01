@@ -2,6 +2,11 @@
 
 Banksy is a **full-stack banking application MVP** built with:
 
+To install you must install all submodules using the command below
+```bash
+git clone --recurse-submodules https://github.com/seanippolito/banksy.git
+```
+
 * **Frontend**: Next.js (App Router) + React 19 + Tailwind CSS v4 + Clerk for authentication
 * **Backend**: FastAPI + SQLAlchemy + Alembic + SQLite (dev) / Postgres (prod)
 * **DevOps**: Docker + Docker Compose + Poetry for Python dependency management
@@ -60,12 +65,19 @@ The application provides a simulated online banking platform with user authentic
 * [Poetry](https://python-poetry.org/) (Python dependency manager)
 * Docker + Docker Compose
 * Clerk account (for authentication)
+* Make install for easy docker run
 
 ---
 
 ## ⚙️ Environment Variables
 
-Create a `.env` file in the backend and frontend:
+Create a `.env.local` for local runs, `.env.development` for docker development runs, `.env.production` for docker production runs file in the backend, frontend, and for docker ensure the .env files are copied into the root directory:
+The test_db also needs a separate `.env.test` for testing on a separate standalone database that doesn't impact the development database
+
+You must create an account with Clerk to enable User Authentication or the App won't run do to missing .env keys.
+In addition to creating an account you will need to generate a JWT Template to communicate with the database securely. See the image below for assistance. 
+
+![img.png](img.png)
 
 ### Backend `.env`
 
@@ -100,10 +112,13 @@ mkdir -p apps/backend/data
 
 ```bash
 cd apps/backend
+poetry install
 poetry run alembic upgrade head
 ```
 
 ### Seed Basic Data
+
+Backend service must be running in docker to seed the account. 
 
 ```bash
 make seed
@@ -120,7 +135,11 @@ make seed
    ```bash
    cd apps/backend
    poetry install
-   poetry run uvicorn app.main:app --reload
+   make run
+   ```
+   if make is not installed run through poetry
+   ```
+   poetry run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
    ```
 
 2. Start frontend
@@ -141,6 +160,9 @@ Access:
 
 ### Docker Development Environment
 
+From the root directory ./banksy
+
+The Docker dev environment will wipe the database everytime it is shutdown, starting with a clean dev environment for testing. 
 ```bash
 make dev
 ```
