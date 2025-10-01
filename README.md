@@ -138,7 +138,7 @@ make seed
    make run
    ```
    if make is not installed run through poetry
-   ```
+   ```bash
    poetry run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
    ```
 
@@ -149,6 +149,14 @@ make seed
    pnpm install
    pnpm dev
    ```
+
+3. Start both at same time from root directory (banksy) using concurrently
+Changes to backend will cause the backend app to hot reload, crashing the frontend app that is reliant on the backend being up
+
+  ```bash
+  pnpm install
+  pnpm dev
+  ```
 
 Access:
 
@@ -173,11 +181,23 @@ Runs both frontend + backend in containers with live reload.
 
 ### Docker Production Environment
 
+The Docker production environment persists the database everytime it is shutdown, preserving your data.
 ```bash
 make up
 ```
 
 Runs production builds for both services.
+
+---
+
+### Docker Graceful Shutdown Environment
+
+Tears down the Docker environment. 
+```bash
+make down
+```
+
+Works on both production and development docker instances
 
 ---
 
@@ -197,15 +217,26 @@ Run backend tests with coverage report included:
 cd apps/backend
 poetry run pytest -v
 ```
-
 In-memory SQLite is used for testing to isolate from dev/prod data.
+
+---
+
+Run frontend tests with vitest, currently only 1 test implemented to demonstrate framework knowledge, need to add more tests in future development.
+
+```bash
+cd apps/frontend
+pnpm install
+pnpm vitest
+```
 
 ---
 
 ## 🔮 Next Steps
 
-* Improve test coverage (currently ~65%)
+* Improve test coverage (currently ~65%) to %80 in the backend
+* Add more tests to cover all API calls in the frontend (ran out of time to cover this)
 * Add real card tokenization/PCI-safe mock layer
+* Enable Clerk production mode to enhance security
 * Expand statements (export to PDF/CSV)
 * Implement scheduled/recurring transfers
 * UI polish (charts, analytics)

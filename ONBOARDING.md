@@ -26,6 +26,10 @@ Ensure you have the following installed:
 * [pnpm](https://pnpm.io/installation)
 * [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 * [Clerk](https://clerk.dev/) account (for authentication keys)
+* You must create an account with Clerk to enable User Authentication or the App won't run do to missing .env keys.
+  In addition to creating an account you will need to generate a JWT Template to communicate with the database securely. See the image below for assistance.
+
+![img.png](img.png)
 
 ---
 
@@ -34,7 +38,7 @@ Ensure you have the following installed:
 1. **Clone the repository**
 
    ```bash
-   git clone <repo-url>
+   git clone --recurse-submodules https://github.com/seanippolito/banksy.git
    cd banksy
    ```
 
@@ -56,7 +60,10 @@ Ensure you have the following installed:
 
 3. **Environment variables**
 
-   Copy `.env.example` to `.env` in both backend and frontend directories and update values.
+   Create a `.env.local` for local runs, `.env.development` for docker development runs, `.env.production` for docker production runs file in the backend, frontend, and for docker ensure the .env files are copied into the root directory:
+   The test_db also needs a separate `.env.test` for testing on a separate standalone database that doesn't impact the development database
+
+
 
    **Backend `.env`**
 
@@ -94,6 +101,8 @@ Ensure you have the following installed:
 
 3. **Seed initial data**
 
+   Backend service must be running in docker to seed the account.
+
    ```bash
    make seed
    ```
@@ -106,17 +115,32 @@ Ensure you have the following installed:
 
 Backend:
 
-```bash
-cd apps/backend
-poetry run uvicorn app.main:app --reload
-```
+   ```bash
+   cd apps/backend
+   poetry install
+   make run
+   ```
+
+   if make is not installed run through poetry
+   ```bash
+   poetry run uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
+   ```
 
 Frontend:
 
-```bash
-cd apps/frontend
-pnpm dev
-```
+   ```bash
+   cd apps/frontend
+   pnpm install
+   pnpm dev
+   ```
+
+Start both at same time from root directory (banksy) using concurrently
+Changes to backend will cause the backend app to hot reload, crashing the frontend app that is reliant on the backend being up
+
+  ```bash
+  pnpm install
+  pnpm dev
+  ```
 
 Open:
 
@@ -127,6 +151,8 @@ Open:
 ---
 
 ### Development with Docker
+
+From the root directory ./banksy
 
 ```bash
 make dev
@@ -157,22 +183,6 @@ poetry run pytest -v --cov=app --cov-report=term-missing
 
 * Tests run against **in-memory SQLite** so dev data is never touched.
 * Aim for **80%+ coverage**.
-
----
-
-## 📂 Project Structure
-
-```
-apps/
-  frontend/        # Next.js + Tailwind UI
-  backend/         # FastAPI backend
-    app/
-      api/         # API routes
-      db/          # Models, migrations, session
-      schemas/     # Pydantic schemas
-      middleware/  # Error logging, auth, etc.
-    tests/         # Pytest-based test suite
-```
 
 ---
 
@@ -218,8 +228,4 @@ apps/
 * Implement real-world card tokenization mock
 * Setup CI/CD for cloud deployment
 
----
 
-✅ That’s it! With this guide, a new developer should be productive within the first hour.
-
----
